@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Fantasy Pachinko Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 筐体上部ランプ・役物イメージ -->
+        <div class="top-lamp" id="topLamp">
+            <div class="glow-effect"></div>
+        </div>
+
+        <!-- データカウンター -->
+        <div class="data-counter">
+            <div class="data-item">
+                <span class="label">現在回転数</span>
+                <span class="value" id="currentSpins">0</span>
+            </div>
+            <div class="data-item">
+                <span class="label">総大当り回数</span>
+                <span class="value" id="totalHits">0</span>
+            </div>
+            <div class="data-item">
+                <span class="label">初当り回数</span>
+                <span class="value" id="firstHits">0</span>
+            </div>
+            <div class="data-item">
+                <span class="label">RUSH突入回数</span>
+                <span class="value" id="rushCount">0</span>
+            </div>
+            <div class="data-item highlight-red">
+                <span class="label">持ち玉</span>
+                <span class="value" id="currentBalls">0</span>
+            </div>
+            <div class="data-item">
+                <span class="label">最高出玉</span>
+                <span class="value" id="maxBalls">0</span>
+            </div>
+        </div>
+
+        <!-- メイン液晶 -->
+        <div class="lcd-screen" id="lcdScreen">
+            <!-- 巨大役物 -->
+            <div class="yakumono" id="yakumono">777</div>
+
+            <!-- 演出エフェクト用レイヤー -->
+            <div class="effect-layer" id="effectLayer"></div>
+            
+            <!-- ST中の残り回数表示など -->
+            <div class="status-overlay" id="statusOverlay" style="display: none;">
+                <div class="rush-title">AWAKENING RUSH</div>
+                <div class="st-counter">残り <span id="stRemaining">130</span> 回</div>
+            </div>
+
+            <!-- カットイン表示用 -->
+            <div class="cut-in" id="cutIn"></div>
+
+            <!-- 図柄表示エリア -->
+            <div class="symbols-container">
+                <div class="symbol" id="symLeft">-</div>
+                <div class="symbol" id="symCenter">-</div>
+                <div class="symbol" id="symRight">-</div>
+            </div>
+
+            <!-- 下部テロップ -->
+            <div class="telop" id="telop">変動待機中...</div>
+        </div>
+
+        <!-- コントロールパネル -->
+        <div class="control-panel">
+            <button class="btn btn-normal" id="btn1Spin">1回転</button>
+            <button class="btn btn-normal" id="btn10Spin">10回転</button>
+            <button class="btn btn-normal" id="btn100Spin">100回転</button>
+            <button class="btn btn-auto" id="btnAuto">オート</button>
+            <button class="btn btn-danger" id="btnReset">リセット</button>
+        </div>
+
+        <div class="options-panel" style="display: flex; justify-content: flex-end; align-items: center; padding: 0 5px; margin-top: -5px; margin-bottom: 5px;">
+            <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <input type="checkbox" id="chkSkip" style="width: 1.2rem; height: 1.2rem;">
+                <span style="font-size: 0.85rem; color: #ccc;">演出スキップ (超高速)</span>
+            </label>
+        </div>
+
+        <!-- 履歴・ログ表示 -->
+        <div class="log-area">
+            <div class="log-header">システムログ</div>
+            <div class="log-content" id="logContent">
+                <p>システム起動... 待機中</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="sound.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
