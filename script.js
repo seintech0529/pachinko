@@ -157,10 +157,10 @@ function drawNormalProduction(isHit) {
         if (r < 0.9) return { type: 'gold', name: '最強リーチ', reach: true, wait: 3000, logClass: 'gold' };
         return { type: 'red', name: '赤演出', reach: true, wait: 2000, logClass: 'red' };
     } else {
-        if (r < 0.02) return { type: 'awaken', name: '覚醒演出', reach: true, wait: 3500, logClass: 'red' };
-        if (r < 0.05) return { type: 'gold', name: '金演出', reach: true, wait: 2500, logClass: 'gold' };
-        if (r < 0.15) return { type: 'red', name: '赤演出', reach: true, wait: 2000, logClass: 'red' };
-        if (r < 0.35) return { type: 'chance', name: 'チャンス', reach: true, wait: 1500, logClass: '' };
+        if (r < 0.002) return { type: 'awaken', name: '覚醒演出', reach: true, wait: 3500, logClass: 'red' };
+        if (r < 0.007) return { type: 'gold', name: '金演出', reach: true, wait: 2500, logClass: 'gold' };
+        if (r < 0.02) return { type: 'red', name: '赤演出', reach: true, wait: 2000, logClass: 'red' };
+        if (r < 0.07) return { type: 'chance', name: 'チャンス', reach: true, wait: 1500, logClass: '' };
         return { type: 'normal', name: 'ノーマル', reach: false, wait: 600, logClass: '' };
     }
 }
