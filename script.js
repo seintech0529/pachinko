@@ -21,6 +21,9 @@ let state = {
     totalHits: 0,
     firstHits: 0,
     rushCount: 0,
+    totalNormalSpins: 0,
+    currentCombo: 0,
+    maxCombo: 0,
     isSpinning: false,
     autoSpinEnabled: false,
     autoSpinsRemaining: 0,
@@ -29,9 +32,13 @@ let state = {
 
 // --- DOM Elements ---
 const elCurrentSpins = document.getElementById('currentSpins');
+const elTotalNormalSpins = document.getElementById('totalNormalSpins');
 const elTotalHits = document.getElementById('totalHits');
 const elFirstHits = document.getElementById('firstHits');
+const elHitProb = document.getElementById('hitProb');
 const elRushCount = document.getElementById('rushCount');
+const elComboCount = document.getElementById('comboCount');
+const elMaxComboCount = document.getElementById('maxComboCount');
 const elCurrentBalls = document.getElementById('currentBalls');
 const elMaxBalls = document.getElementById('maxBalls');
 
@@ -58,12 +65,62 @@ const btnReset = document.getElementById('btnReset');
 const elLogContent = document.getElementById('logContent');
 
 // --- Helper Functions ---
+
+let ballChart;
+function initChart() {
+    const ctx = document.getElementById('ballChart').getContext('2d');
+    ballChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [0],
+            datasets: [{
+                label: '持ち玉',
+                data: [0],
+                borderColor: '#ff0000',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            scales: {
+                x: { display: false },
+                y: { grid: { color: '#333' }, ticks: { color: '#aaa' } }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+}
+
+function updateChart() {
+    if (!ballChart) return;
+    ballChart.data.labels.push(state.totalNormalSpins + state.currentSpins);
+    ballChart.data.datasets[0].data.push(state.currentBalls);
+    ballChart.update();
+}
+
 function updateStats() {
     elCurrentSpins.textContent = state.currentSpins;
+    elTotalNormalSpins.textContent = state.totalNormalSpins;
     elTotalHits.textContent = state.totalHits;
     elFirstHits.textContent = state.firstHits;
     elRushCount.textContent = state.rushCount;
     elCurrentBalls.textContent = state.currentBalls;
+    elComboCount.textContent = state.currentCombo;
+    elMaxComboCount.textContent = state.maxCombo;
+    
+    if (state.firstHits > 0) {
+        elHitProb.textContent = `1/${Math.floor(state.totalNormalSpins / state.firstHits)}`;
+    } else {
+        elHitProb.textContent = '1/---';
+    }
     
     if (state.currentBalls > state.maxBalls) {
         state.maxBalls = state.currentBalls;
@@ -185,11 +242,16 @@ async function spin() {
     // 通常時の玉減りチェック
     if (!state.isRush) {
         state.currentBalls -= BALLS_PER_SPIN;
+        state.totalNormalSpins++;
     }
     
     state.isSpinning = true;
     state.currentSpins++;
     updateStats();
+
+    if (state.currentSpins % 50 === 0 && !state.isRush) {
+        updateChart();
+    }
     
     if (state.isRush) {
         state.stRemaining--;
@@ -312,12 +374,18 @@ async function processHit(isFromRush) {
         isRushEntry = true;
         hitSymbol = 7;
         payout = RUSH_PAYOUT;
+        state.currentCombo++;
         addLog(`RUSH中大当り！ +${payout}玉`, 'hit');
     } else {
         state.firstHits++;
+        state.currentCombo = 1;
         isRushEntry = Math.random() < RUSH_ENTRY_RATE;
         hitSymbol = isRushEntry ? 7 : (Math.random() < 0.5 ? 3 : 2); // 奇数ならRUSH風、通常は偶数
         addLog(`初当り！ +${payout}玉 (${isRushEntry ? 'RUSH突入' : '通常'})`, 'hit');
+    }
+
+    if (state.currentCombo > state.maxCombo) {
+        state.maxCombo = state.currentCombo;
     }
 
     elYakumono.textContent = hitSymbol + '' + hitSymbol + '' + hitSymbol;
@@ -347,6 +415,7 @@ async function processHit(isFromRush) {
     // 出玉追加
     state.currentBalls += payout;
     updateStats();
+    updateChart();
     
     if (isRushEntry) {
         await enterRush();
@@ -385,6 +454,7 @@ async function endRush() {
     
     state.isRush = false;
     state.stRemaining = 0;
+    state.currentCombo = 0;
     elStatusOverlay.style.display = 'none';
     elLcdScreen.style.background = 'radial-gradient(circle at center, #1a0000 0%, #000 100%)';
     state.currentSpins = 0; // RUSH抜け回転数リセット
@@ -434,11 +504,19 @@ btnReset.addEventListener('click', () => {
         totalHits: 0,
         firstHits: 0,
         rushCount: 0,
+        totalNormalSpins: 0,
+        currentCombo: 0,
+        maxCombo: 0,
         isSpinning: false,
         autoSpinEnabled: false,
         autoSpinsRemaining: 0,
         isCurrentSpinHit: false
     };
+    if (ballChart) {
+        ballChart.data.labels = [0];
+        ballChart.data.datasets[0].data = [0];
+        ballChart.update();
+    }
     elLogContent.innerHTML = '<p>システムリセット完了</p>';
     setEffect('');
     elStatusOverlay.style.display = 'none';
@@ -451,4 +529,5 @@ btnReset.addEventListener('click', () => {
 });
 
 // Init
+initChart();
 updateStats();

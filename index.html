@@ -5,24 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dark Fantasy Pachinko Simulator</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- 筐体上部ランプ・役物イメージ -->
+    <div class="layout-wrapper">
+        <div class="container">
+            <!-- 筐体上部ランプ・役物イメージ -->
         <div class="top-lamp" id="topLamp">
             <div class="glow-effect"></div>
         </div>
 
-        <!-- データカウンター -->
         <div class="data-counter">
             <div class="data-item">
                 <span class="label">現在回転数</span>
                 <span class="value" id="currentSpins">0</span>
             </div>
             <div class="data-item">
-                <span class="label">総大当り回数</span>
-                <span class="value" id="totalHits">0</span>
+                <span class="label">総回転数</span>
+                <span class="value" id="totalNormalSpins">0</span>
+            </div>
+            <div class="data-item">
+                <span class="label">大当り確率</span>
+                <span class="value" id="hitProb">1/---</span>
             </div>
             <div class="data-item">
                 <span class="label">初当り回数</span>
@@ -31,6 +36,18 @@
             <div class="data-item">
                 <span class="label">RUSH突入回数</span>
                 <span class="value" id="rushCount">0</span>
+            </div>
+            <div class="data-item">
+                <span class="label">RUSH継続回数</span>
+                <span class="value" id="comboCount">0</span>
+            </div>
+            <div class="data-item">
+                <span class="label">最高継続回数</span>
+                <span class="value" id="maxComboCount">0</span>
+            </div>
+            <div class="data-item">
+                <span class="label">総大当り回数</span>
+                <span class="value" id="totalHits">0</span>
             </div>
             <div class="data-item highlight-red">
                 <span class="label">持ち玉</span>
@@ -91,6 +108,17 @@
             <div class="log-header">システムログ</div>
             <div class="log-content" id="logContent">
                 <p>システム起動... 待機中</p>
+            </div>
+        </div>
+        </div>
+
+        <div class="side-panel">
+            <!-- グラフ表示 -->
+            <div class="graph-area" style="background: #000; border: 1px solid var(--border-color); border-radius: 5px; display: flex; flex-direction: column;">
+                <div class="log-header">スランプグラフ</div>
+                <div style="padding: 5px; background: #111; border-radius: 0 0 5px 5px; height: 300px; width: 100%;">
+                    <canvas id="ballChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
